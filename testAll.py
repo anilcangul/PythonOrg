@@ -1,0 +1,45 @@
+import unittest
+from selenium import webdriver
+from page import HomePage
+from page import AboutPage
+from locators import CommonPageLocators
+from locators import AboutPageLocators
+
+class TestPyOrgBase(unittest.TestCase):
+
+    def setUp(self):
+        chrome_options = webdriver.ChromeOptions()
+        #chrome_options.add_argument("headless")
+        chrome_options.add_argument("--start-maximized")
+        self.driver = webdriver.Chrome(options=chrome_options)
+
+    def tearDown(self):
+        self.driver.close()
+
+class TestHome(TestPyOrgBase):
+
+    def setUp(self):
+        super().setUp()
+        self.home = HomePage(self.driver)
+
+    def test_TC001_py3_doc_button(self):
+        self.home.hover_to(CommonPageLocators.DOC)
+        self.home.assert_elem_text(CommonPageLocators.PY3_DOC_BUTTON, 'Python Docs')
+        self.home.click(CommonPageLocators.PY3_DOC_BUTTON)
+        assert self.driver.current_url == "https://docs.python.org/3/"
+
+    def test_TC002_blahblah_search(self):
+        self.home.search_for("blahblah")
+        self.home.assert_elem_text(CommonPageLocators.SEARCH_RESULT_LIST,"No results")
+
+class TestAbout(TestPyOrgBase):
+
+    def setUp(self):
+        super().setUp()
+        self.about = AboutPage(self.driver)
+
+    def test_TC003_upcoming_events_check(self):
+        self.about.assert_elem_text(AboutPageLocators.UPCOMING_EVENTS, 'Upcoming Events')
+
+if __name__ == '__main__':
+    unittest.main()
